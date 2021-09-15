@@ -1,12 +1,17 @@
 import React from "react";
-import { Card, Col, Spinner, Container, Button } from "react-bootstrap";
+import { Card, Col, Spinner, Container, Button, Alert } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux'
 import { addToFavouritesAction } from "../actions";
+import { render } from "@testing-library/react";
 
-const mapStateToProps = state => state
+const mapStateToProps = state => ({
+  companieslength: state.companies.company.length,
+  companies: state.companies.company,
+})
+
 
 const mapDispatchToProps = dispatch => ({
   addToFavourites: (companyToAdd) => dispatch(addToFavouritesAction(companyToAdd)),
@@ -17,9 +22,10 @@ function CompanyDetail(props) {
   const [isLoading, setisLoading] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const { company_name } = useParams();
-  // const [companySelected, setcompanySelected] = useState(null);
+  const [isFavourited, setisFavourited] = useState(false);
+  const [justAdded, setjustAdded] = useState(false);
 
-
+ 
   const getArray = async () => {
     setisLoading(true);
     var myHeaders = new Headers();
@@ -40,7 +46,7 @@ function CompanyDetail(props) {
       );
       let companyresponse = await response.json();
       setJobsArray(companyresponse.data);
-      console.log(jobsArray);
+
       setisLoading(false);
     } catch (error) {
       console.log(error);
@@ -50,6 +56,14 @@ function CompanyDetail(props) {
 
 
   useEffect(() => {
+    const result = props.companies.filter(company => company === company_name);
+    if(result.length > 0){
+      console.log("matching!")
+      setisFavourited(true)
+    }else{
+      console.log("not matching!")
+      setisFavourited(false)
+    }
     setCompanyName(company_name)
     getArray();
     // if (typeof jobsArray[0].company_logo_url !== "undefined") {
@@ -57,20 +71,48 @@ function CompanyDetail(props) {
     // }
   }, []);
 
+  // const tempAlert = () =>{
+  //   setjustAdded(true);
+  // }
+
   return (
     <Card className="containerborder">
       <div className="position-relative">
       <h1 className="mt-3">Jobs Search Engine</h1>
       <Link to="/favourites">
-      <Button className="favouritecompanybutton" onClick={() => props.addToFavourites(companyName)}>Favourite Companies</Button>
+      <Button className="favouritecompanybutton" >Favourite Companies{" "}({props.companieslength})</Button>
       </Link>
+      <Link to="/search">
+      <Button className="backbutton">Back</Button>
+      </Link>
+      
       </div>
       <hr style={{ backgroundColor:"black" }}/>
       <h2 className="mt-2">{company_name}</h2>
-      <Button size="sm" className="mx-auto">Favourite</Button>
+      <div style={{ height: "25px" }}>
+      {isFavourited ? "" : (
+        <Button size="sm" className="mx-auto" onClick={() => {
+          props.addToFavourites(companyName);
+          setTimeout(() => {
+            setjustAdded(false);
+          }, 1500);
+          setjustAdded(true);
+          setisFavourited(true);
+        }}>Favourite</Button>
+      )}
+         {justAdded ? (
+        <Alert className="mb-0 py-2 w-50 mx-auto" variant="success">{companyName} added to favourites!</Alert>
+      ) : ""}
+    </div>    
+      
       <h4 className="mt-5 mb-3">Jobs Available:</h4>
       {isLoading ? (
-        <Spinner animation="border" role="status"></Spinner>
+        <Spinner
+        variant="success"
+        animation="border"
+        role="status"
+        className="mx-auto mt-5"
+      ></Spinner>
       ) : (
         <Container className="jobcard" style={{ width: "35vw" }}>
           {jobsArray.map((b) => (
