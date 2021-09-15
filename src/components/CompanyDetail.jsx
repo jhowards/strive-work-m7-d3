@@ -1,13 +1,24 @@
 import React from "react";
-import { Card, Col, Spinner, Container } from "react-bootstrap";
+import { Card, Col, Spinner, Container, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
+import { Link } from "react-router-dom";
+import { connect } from 'react-redux'
+import { addToFavouritesAction } from "../actions";
 
-function CompanyDetail() {
+const mapStateToProps = state => state
+
+const mapDispatchToProps = dispatch => ({
+  addToFavourites: (companyToAdd) => dispatch(addToFavouritesAction(companyToAdd)),
+})
+
+function CompanyDetail(props) {
   const [jobsArray, setJobsArray] = useState([]);
   const [isLoading, setisLoading] = useState(false);
-  const [isCompanyLogo, setisCompanyLogo] = useState(false);
+  const [companyName, setCompanyName] = useState("");
   const { company_name } = useParams();
+  // const [companySelected, setcompanySelected] = useState(null);
+
 
   const getArray = async () => {
     setisLoading(true);
@@ -37,7 +48,9 @@ function CompanyDetail() {
     }
   };
 
+
   useEffect(() => {
+    setCompanyName(company_name)
     getArray();
     // if (typeof jobsArray[0].company_logo_url !== "undefined") {
     //   setisCompanyLogo(true);
@@ -46,16 +59,22 @@ function CompanyDetail() {
 
   return (
     <Card className="containerborder">
+      <div className="position-relative">
       <h1 className="mt-3">Jobs Search Engine</h1>
-      <h2 className="mt-4">{company_name}</h2>
-      {isCompanyLogo ? <img src={jobsArray[0].company_logo_url} alt="" /> : ""}
+      <Link to="/favourites">
+      <Button className="favouritecompanybutton" onClick={() => props.addToFavourites(companyName)}>Favourite Companies</Button>
+      </Link>
+      </div>
+      <hr style={{ backgroundColor:"black" }}/>
+      <h2 className="mt-2">{company_name}</h2>
+      <Button size="sm" className="mx-auto">Favourite</Button>
       <h4 className="mt-5 mb-3">Jobs Available:</h4>
       {isLoading ? (
         <Spinner animation="border" role="status"></Spinner>
       ) : (
         <Container className="jobcard" style={{ width: "35vw" }}>
           {jobsArray.map((b) => (
-            <Col xs={12} key={b.id}>
+            <Col xs={12} key={b._id}>
               <Card
                 className="m-2 jobCard"
                 style={{
@@ -84,4 +103,4 @@ function CompanyDetail() {
   );
 }
 
-export default CompanyDetail;
+export default connect(mapStateToProps, mapDispatchToProps)(CompanyDetail);

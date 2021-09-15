@@ -10,6 +10,7 @@ import {
 
 import CompanyDetail from "./components/CompanyDetail";
 import SearchPage from "./components/SearchPage";
+import FavouriteCompanies from "./components/FavouriteCompanies";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           </Route>
 
           <Route path="/search" exact component={SearchPage} />
+          <Route path="/favourites" exact component={FavouriteCompanies} />
           <Route
             path="/company-detail/:company_name"
             exact
