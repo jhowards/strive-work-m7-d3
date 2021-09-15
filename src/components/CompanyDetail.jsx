@@ -45,7 +45,7 @@ function CompanyDetail() {
   }, []);
 
   return (
-    <div>
+    <Card className="containerborder">
       <h1 className="mt-3">Jobs Search Engine</h1>
       <h2 className="mt-4">{company_name}</h2>
       {isCompanyLogo ? <img src={jobsArray[0].company_logo_url} alt="" /> : ""}
@@ -53,7 +53,7 @@ function CompanyDetail() {
       {isLoading ? (
         <Spinner animation="border" role="status"></Spinner>
       ) : (
-        <Container style={{ width: "35vw" }}>
+        <Container className="jobcard" style={{ width: "35vw" }}>
           {jobsArray.map((b) => (
             <Col xs={12} key={b.id}>
               <Card
@@ -80,7 +80,7 @@ function CompanyDetail() {
           ))}
         </Container>
       )}
-    </div>
+    </Card>
   );
 }
 

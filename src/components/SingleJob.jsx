@@ -9,7 +9,7 @@ class SingleJob extends React.Component {
         <Card
           className="m-2 jobCard"
           style={{
-            height: "125px",
+            height: "140px",
             border: "3px solid black",
           }}
         >
